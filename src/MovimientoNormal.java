@@ -5,46 +5,29 @@ import ia.battle.core.ConfigurationManager;
 import ia.battle.core.FieldCell;
 import ia.battle.core.actions.Move;
 
-public class MovimientoDummy extends Move {
+public class MovimientoNormal extends Move {
 
-	private FieldCell from;
-	private int stepX;
-	private int stepY;
+	private FieldCell from, dest;
+	private AStar map;
 
-	public MovimientoDummy() {
+	public MovimientoNormal() {
 		
 	}
 	
-	public MovimientoDummy(FieldCell from, int stepX, int stepY) {
+	public MovimientoNormal(AStar a, FieldCell from, FieldCell dest) {
 		this.from = from;
-		this.stepX = stepX;
-		this.stepY = stepY;
+		this.dest = dest;
+		this.map = a;
 	}
 	
 	@Override
 	public ArrayList<FieldCell> move() {
-		int x = from.getX();
-		int y = from.getY();
-
-		ArrayList<FieldCell> path = new ArrayList();
-
-		int to = x + stepX;
-		for (; x < to; x++) {
-			if (x < ConfigurationManager.getInstance().getMapWidth() - 1) {
-				path.add(BattleField.getInstance().getFieldCell(x, y));
-			} else {
-				x--;
-				break;
-			}
+		ArrayList<Node> bestPath = map.findPath(from,dest);
+		ArrayList<FieldCell> fcpath = new ArrayList<FieldCell>();
+		for (Node node : bestPath) {
+			fcpath.add(node.getFieldCell());
 		}
-		to = y + stepY;
-		for (; y < to; y++)
-			if (y < ConfigurationManager.getInstance().getMapHeight() - 1) {
-				System.out.println(x);
-				System.out.println(y);
-				path.add(BattleField.getInstance().getFieldCell(x, y));
-			}
-		return path;
+		return fcpath;
 	}
 
 }
