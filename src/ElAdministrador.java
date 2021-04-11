@@ -10,7 +10,7 @@ public class ElAdministrador extends WarriorManager {
 
 	@Override
 	public String getName() {
-		return "El Administrador";
+		return "El Administrador 2";
 	}
 
 	@Override

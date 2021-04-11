@@ -7,10 +7,6 @@ import ia.battle.core.FieldCellType;
 public class AStar {
 
 	private FieldCell[][] map;
-	public FieldCell[][] getMap() {
-		return map;
-	}
-
 
 	private FieldCell fieldCellOrigin, fieldCellDestination;
 	private ArrayList<Node> nodes;
@@ -21,13 +17,6 @@ public class AStar {
 		this.map = fieldCells;
 	}
 	
-	public int[] getMapSize() {
-		int[] result = new int[2];
-		result[0]=map.length;
-		result[1]=map[0].length;
-		return result;
-	}
-
 	public ArrayList<Node> findPath(FieldCell fcOrigin, FieldCell fcDestination) {
 		this.fieldCellOrigin=fcOrigin;
 		this.fieldCellDestination=fcDestination;
