@@ -6,7 +6,7 @@ import ia.battle.core.Warrior;
 import ia.battle.core.WarriorManager;
 import ia.exceptions.RuleException;
 
-public class ElAdministrador extends WarriorManager {
+public class ElAdministrador2 extends WarriorManager {
 
 	@Override
 	public String getName() {
@@ -31,6 +31,8 @@ public class ElAdministrador extends WarriorManager {
 		characterRoster.add(new Character("TANK", puntoEstandar+puntoMitad+puntoExtra, puntoEstandar+puntoMitad, puntoEstandar, puntoMitad, puntoMitad));
 		
 		characterRoster.add(new Character("SNIPER", puntoMitad, puntoMitad, puntoEstandar+puntoMitad, puntoEstandar, puntoEstandar+puntoMitad+puntoExtra));
+		
+		characterRoster.add(new Character("???", puntoEstandar+puntoMitad+puntoExtra, puntoEstandar, puntoEstandar+puntoMitad, puntoMitad, puntoMitad));
 		
 		//Traigo un personaje random por cada llamada al método
 		return getRandomCharacter(characterRoster);

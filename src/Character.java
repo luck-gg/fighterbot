@@ -13,9 +13,9 @@ import ia.battle.core.actions.BuildWall;
 import ia.exceptions.RuleException;
 
 public class Character extends Warrior {
-	int packsSI = 0;
-	final int packsSILimit = 3;
-	private boolean runningAway = false, stuckChar = false;
+	int packsSI = 0, runningAway = 0 ;
+	final int packsSILimit = 3, runningAwayTurns = 2;
+	private boolean stuckChar = false;
 	private FieldCell lastPos = null, lastlastPos = null;
 
 	public Character(String name, int health, int defense, int strength, int speed, int range) throws RuleException {
@@ -32,7 +32,7 @@ public class Character extends Warrior {
 		ArrayList<FieldCell> si = bf.getSpecialItems();
 		
 		//Check if stuck character
-		checkStuck(this.getPosition());
+		//checkStuck(this.getPosition());
 		
 		if (stuckChar) {
 			FieldCell checkFC = enclosedChar(bf);
@@ -42,19 +42,19 @@ public class Character extends Warrior {
 		}
 		
 		//Normal Attack
-		if (wd.getInRange() && (!hd.getInRange() || !runningAway)  && !stuckChar) {
+		if (wd.getInRange() && (!hd.getInRange() || runningAway!=runningAwayTurns)) {
 			return new Attack(wd.getFieldCell());
 		}
 		
 		//Hunter Running Away
-		else if ((hd.getInRange() || runningAway) && !stuckChar) {
-			destination = runAwayVector(this.getPosition(), hd.getFieldCell(), bf);
-			runningAway = runningAway ? false : true ;
+		else if ((hd.getInRange() || runningAway == runningAwayTurns)) {
+			destination = runAwayVector(this.getPosition(), hd.getFieldCell(), a);
+			runningAway = (runningAway==runningAwayTurns) ? runningAway-1 : runningAwayTurns;
 			return new MovimientoNormal(a, this.getPosition(), destination);
 		}
 		
 		//Picking SI
-		else if (this.getHealth()>=40 && !wd.getInRange() && !hd.getInRange() && packsSI<packsSILimit) {
+		else if (this.getHealth()<20 && !wd.getInRange() && !hd.getInRange() && packsSI<packsSILimit) {
 			destination = getClosestSI(this.getPosition(), si);
 			packsSI++;
 			return new MovimientoNormal(a, this.getPosition(), destination);
@@ -83,15 +83,21 @@ public class Character extends Warrior {
 		stuckChar = (lastlastPos==ap) ? true: false;
 		lastlastPos=lastPos;
 		lastPos=ap;
-		System.out.print("im stuck");
 		return stuckChar;
 	}
 	
 	
-	//TODO: Ver como hacer para cuando ya tiene paredes alrededor y que no quede encerrado
+
 	public FieldCell enclosedChar(BattleField bf) {
 		System.out.print("building wall");
 		List<FieldCell> adj =bf.getAdjacentCells(this.getPosition());
+		//Busco las paredes existentes y las elimino de la lista
+		for (int i = 0; i < adj.size(); i++) {
+			if (adj.get(i).getFieldCellType() == FieldCellType.BLOCKED) {
+				adj.remove(i);
+			}
+		}
+		//Sobre los elementos restantes, construyo pared salvo en un punto de escape
 		for (Iterator<FieldCell> iterator = adj.iterator(); iterator.hasNext();) {
 			FieldCell fieldCell = iterator.next();
 			if (!iterator.hasNext()) {
@@ -107,10 +113,10 @@ public class Character extends Warrior {
 	}
 	
 	//TODO: Reducir distancia final y considerar las esquinas
-	public FieldCell runAwayVector(FieldCell myPosition, FieldCell hunterPosition, BattleField bf) {
+	public FieldCell runAwayVector(FieldCell myPosition, FieldCell hunterPosition, AStar a) {
 	
-		int mapSizeX = bf.getMap().length;
-		int mapSizeY = bf.getMap()[0].length;
+		int mapSizeX = a.getMap().length;
+		int mapSizeY = a.getMap()[0].length;
 		
 		int distanceX = hunterPosition.getX() - myPosition.getX(); //3 - 2 = 1   
 		int distanceY = hunterPosition.getY() - myPosition.getY(); //1 - 6 = -5
@@ -118,14 +124,28 @@ public class Character extends Warrior {
 		//new position
 		int runToX = (myPosition.getX() - distanceX) > 0 ? (myPosition.getX() - distanceX) : 0; // 2 - 1 = 1
 		int runToY = (myPosition.getY() - distanceY) > 0 ? (myPosition.getY() - distanceY) : 0; // 6 - (-5) = 11
-		
-		if (runToX > 0) {	
-			runToX = (hunterPosition.getX() < runToX && mapSizeX > runToX) ? mapSizeX - 1 : 0;
+		 
+		while(runToX >= mapSizeX) {
+			runToX = (runToX >= mapSizeX) ? mapSizeX-1 : runToX;
 		}
-		if (runToY > 0) {
-			runToY = (hunterPosition.getY() < runToY && mapSizeY > runToY) ? mapSizeX - 1 : 0;
+		while (runToY >= mapSizeY)  {
+			runToY = (runToY >= mapSizeY) ? mapSizeY-1 : runToY;
 		}
-		return bf.getMap()[runToX][runToY];
+		System.out.print("mapa "+  mapSizeX + "," + mapSizeY);
+		System.out.print("huyendo a "+  runToX + "," + runToY);
+		/*
+		if (runToX != 0) {	
+			while (Math.abs(hunterPosition.getX()-runToX) < 5 || runToX > mapSizeX || runToX > 0) {
+				runToX = (hunterPosition.getX() < runToX) ? runToX*2 : runToX/2;
+			}
+		}
+		if (runToY != 0) {	
+			while (Math.abs(hunterPosition.getX()-runToY) < 5 || runToY > mapSizeY || runToY > 0) {
+				runToY = (hunterPosition.getX() < runToY) ? runToY*2 : runToY/2;
+			}
+		}
+		*/
+		return a.getMap()[runToX][runToY];
 	}
 
 

@@ -8,6 +8,11 @@ public class AStar {
 
 	private FieldCell[][] map;
 
+	public FieldCell[][] getMap() {
+		return map;
+	}
+
+
 	private FieldCell fieldCellOrigin, fieldCellDestination;
 	private ArrayList<Node> nodes;
 	private ArrayList<Node> closedNodes, openNodes;
