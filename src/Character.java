@@ -20,23 +20,25 @@ public class Character extends Warrior {
 	
 	@Override
 	public Action playTurn(long tick, int actionNumber) {
+		FieldCell destination;
 		BattleField bf = BattleField.getInstance();
 		WarriorData wd = bf.getEnemyData();
 		WarriorData hd = bf.getHunterData();
 		AStar a = new AStar(bf.getMap());
 		ArrayList<FieldCell> si = bf.getSpecialItems();
 		
-		if (wd.getInRange()) {
+		
+		if (wd.getInRange() && !hd.getInRange()) {
 			return new Attack(wd.getFieldCell());
-		}else if (hd.getInRange()) {
-			//return new MovimientoHuida(hd.getFieldCell());
-		}else if (this.getHealth()>40 && !wd.getInRange()) {
-			return new MovimientoNormal(a, this.getPosition(),getClosestSI(this.getPosition(), si));
 		}
-		
-		
-
-		
+		else if (hd.getInRange() && !wd.getInRange()) {
+			destination = runAwayVector(a, this.getPosition(), hd.getFieldCell());
+			return new MovimientoNormal(a, this.getPosition(), destination);
+		}
+		else if (this.getHealth()>40 && !wd.getInRange() && !hd.getInRange()) {
+			destination = getClosestSI(this.getPosition(), si);
+			return new MovimientoNormal(a, this.getPosition(), destination);
+		}
 		
 		return new MovimientoNormal(a, this.getPosition(),wd.getFieldCell());
 	}
@@ -57,7 +59,39 @@ public class Character extends Warrior {
 		// TODO Auto-generated method stub
 		
 	}
-	public FieldCell getClosestSI(FieldCell myPosition,ArrayList<FieldCell> mapSI) {
+public FieldCell runAwayVector(AStar map, FieldCell myPosition, FieldCell hunterPosition) {
+	
+		int mapSizeX = map.getMapSize()[0];
+		int mapSizeY = map.getMapSize()[1];
+		
+		int distanceX = hunterPosition.getX() - myPosition.getX(); //3 - 2 = 1   
+		int distanceY = hunterPosition.getY() - myPosition.getY(); //1 - 6 = -5
+
+		//new position
+		int runToX = (myPosition.getX() - distanceX) > 0 ? (myPosition.getX() - distanceX) : 0; // 2 - 1 = 1
+		int runToY = (myPosition.getY() - distanceY) > 0 ? (myPosition.getY() - distanceY) : 0; // 6 - (-5) = 11
+		
+		if (runToX > 0) {
+			while (hunterPosition.getX() < runToX && mapSizeX > runToX) {
+				runToX++;
+			}
+			while (hunterPosition.getX() > runToX && 0 < runToX) {
+				runToX--;
+			}
+		}
+		if (runToY > 0) {
+			while (hunterPosition.getY() < runToY && mapSizeY > runToY) {
+				runToY++;
+			}
+			while (hunterPosition.getY() > runToY && 0 < runToY) {
+				runToY--;
+			}
+		}
+		return map.getMap()[runToX][runToY];
+	}
+
+
+	public FieldCell getClosestSI(FieldCell myPosition, ArrayList<FieldCell> mapSI) {
 		
 		int x = myPosition.getX();
 		int y = myPosition.getY();

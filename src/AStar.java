@@ -1,15 +1,17 @@
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
-
 import ia.battle.core.FieldCell;
 import ia.battle.core.FieldCellType;
-import ia.battle.test.TestFieldCell;
 
 public class AStar {
 
 	private FieldCell[][] map;
+	public FieldCell[][] getMap() {
+		return map;
+	}
+
+
 	private FieldCell fieldCellOrigin, fieldCellDestination;
 	private ArrayList<Node> nodes;
 	private ArrayList<Node> closedNodes, openNodes;
@@ -17,6 +19,13 @@ public class AStar {
 
 	public AStar(FieldCell[][] fieldCells) {
 		this.map = fieldCells;
+	}
+	
+	public int[] getMapSize() {
+		int[] result = new int[2];
+		result[0]=map.length;
+		result[1]=map[0].length;
+		return result;
 	}
 
 	public ArrayList<Node> findPath(FieldCell fcOrigin, FieldCell fcDestination) {
