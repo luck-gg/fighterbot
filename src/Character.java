@@ -36,7 +36,7 @@ public class Character extends Warrior {
 			return new Attack(wd.getFieldCell());
 		}
 		
-		//Hunter Running Away
+		//Running Away from Hunter
 		else if ((hd.getInRange() || runningAway > 0)) {
 			destination = runAwayVector(this.getPosition(), hd.getFieldCell(), bf);
 			runningAway = (runningAway > 0) ? runningAway-1 : runningAwayTurns;
@@ -44,17 +44,16 @@ public class Character extends Warrior {
 		}
 		
 		//Picking SI
-		else if (this.getHealth()<20 && !wd.getInRange() && !hd.getInRange() && packsSI<packsSILimit) {
+		else if (this.getHealth()>40 && !wd.getInRange() && !hd.getInRange() && packsSI<packsSILimit) {
 			destination = getClosestSI(this.getPosition(), si);
 			packsSI++;
 			return new MovimientoNormal(a, this.getPosition(), destination);
 		}
 		
 		//Low Health
-		else if (this.getHealth()<20 && !wd.getInRange() && !hd.getInRange() && packsSI<packsSILimit) {
-			destination = getClosestSI(this.getPosition(), si);
-			packsSI++;
-			return new MovimientoNormal(a, this.getPosition(), destination);
+		else if (this.getHealth()<10) {
+			destination = enclosedChar(bf);
+			return new BuildWall(destination);
 		}
 		
 		return new MovimientoNormal(a, this.getPosition(),wd.getFieldCell());
@@ -79,7 +78,6 @@ public class Character extends Warrior {
 	
 
 	public FieldCell enclosedChar(BattleField bf) {
-		System.out.print("building wall");
 		List<FieldCell> adj =bf.getAdjacentCells(this.getPosition());
 		//Busco las paredes existentes y las elimino de la lista
 		for (int i = 0; i < adj.size(); i++) {
