@@ -10,6 +10,8 @@ import ia.battle.core.WarriorData;
 import ia.battle.core.actions.Action;
 import ia.battle.core.actions.Attack;
 import ia.battle.core.actions.BuildWall;
+import ia.battle.core.actions.Skip;
+import ia.battle.core.actions.Suicide;
 import ia.exceptions.RuleException;
 
 public class Character extends Warrior {
@@ -32,7 +34,7 @@ public class Character extends Warrior {
 
 
 		//Normal Attack
-		if (wd.getInRange() && (!hd.getInRange() || runningAway!=runningAwayTurns)) {
+		if (wd.getInRange() && (!hd.getInRange() || runningAway>0)) {
 			return new Attack(wd.getFieldCell());
 		}
 		
@@ -53,7 +55,13 @@ public class Character extends Warrior {
 		//Low Health
 		else if (this.getHealth()<10) {
 			destination = enclosedChar(bf);
-			return new BuildWall(destination);
+			if(destination==null && wd.getInRange()) {
+				return new Suicide();
+			}else if(destination==null)  {
+				return new Skip();
+			}else {
+				return new BuildWall(destination);
+			}
 		}
 		
 		return new MovimientoNormal(a, this.getPosition(),wd.getFieldCell());
@@ -88,6 +96,9 @@ public class Character extends Warrior {
 		//Sobre los elementos restantes, construyo pared salvo en un punto de escape
 		for (Iterator<FieldCell> iterator = adj.iterator(); iterator.hasNext();) {
 			FieldCell fieldCell = iterator.next();
+			if (!iterator.hasNext()) {
+				return null;
+			}
 			if (fieldCell.getFieldCellType() != FieldCellType.BLOCKED) {
 				iterator.remove();
 				return fieldCell;
