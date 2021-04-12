@@ -16,7 +16,7 @@ import ia.exceptions.RuleException;
 
 public class Character extends Warrior {
 	int packsSI = 0, runningAway = 0 ;
-	final int packsSILimit = 3, runningAwayTurns = 2;
+	final int packsSILimit = 3, runningAwayTurns = 3, explosionRange = 5;
 
 	public Character(String name, int health, int defense, int strength, int speed, int range) throws RuleException {
 		super(name, health, defense, strength, speed, range);
@@ -53,9 +53,9 @@ public class Character extends Warrior {
 		}
 		
 		//Low Health
-		else if (this.getHealth()<10) {
+		else if (this.getHealth()<20) {
 			destination = enclosedChar(bf);
-			if(destination==null && wd.getInRange()) {
+			if(destination==null && bf.calculateDistance(this.getPosition(), wd.getFieldCell())<explosionRange) {
 				return new Suicide();
 			}else if(destination==null)  {
 				return new Skip();
