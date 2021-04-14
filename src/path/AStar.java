@@ -1,6 +1,8 @@
+package path;
 
 import java.util.ArrayList;
 import java.util.Collections;
+
 import ia.battle.core.FieldCell;
 import ia.battle.core.FieldCellType;
 

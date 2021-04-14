@@ -1,3 +1,4 @@
+package path;
 import ia.battle.core.FieldCell;
 
 public class Node {

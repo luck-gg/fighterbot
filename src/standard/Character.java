@@ -1,7 +1,9 @@
+package standard;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import action.MovimientoNormal;
 import ia.battle.core.BattleField;
 import ia.battle.core.FieldCell;
 import ia.battle.core.FieldCellType;
@@ -13,8 +15,15 @@ import ia.battle.core.actions.BuildWall;
 import ia.battle.core.actions.Skip;
 import ia.battle.core.actions.Suicide;
 import ia.exceptions.RuleException;
+import path.AStar;
 
 public class Character extends Warrior {
+	GameContext context = null;
+	public GameContext getContext() {
+		return context;
+	}
+
+
 	int packsSI = 0, runningAway = 0 ;
 	final int packsSILimit = 3, runningAwayTurns = 3, explosionRange = 5;
 
@@ -31,8 +40,10 @@ public class Character extends Warrior {
 		AStar a = new AStar(bf.getMap());
 		ArrayList<FieldCell> si = bf.getSpecialItems();
 		
-
-
+		//
+		context = GameContext.getInstance();
+		context.gameAction(this);
+		
 		//Normal Attack
 		if (wd.getInRange() && (!hd.getInRange() || runningAway>0)) {
 			return new Attack(wd.getFieldCell());

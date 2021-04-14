@@ -1,7 +1,10 @@
+package action;
 import java.util.ArrayList;
 
 import ia.battle.core.FieldCell;
 import ia.battle.core.actions.Move;
+import path.AStar;
+import path.Node;
 
 public class MovimientoNormal extends Move {
 
