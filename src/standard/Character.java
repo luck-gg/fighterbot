@@ -23,27 +23,18 @@ public class Character extends Warrior {
 		return context;
 	}
 
-
-	int packsSI = 0, runningAway = 0 ;
-	final int packsSILimit = 3, runningAwayTurns = 3, explosionRange = 5;
-
 	public Character(String name, int health, int defense, int strength, int speed, int range) throws RuleException {
 		super(name, health, defense, strength, speed, range);
 	}
 	
 	@Override
 	public Action playTurn(long tick, int actionNumber) {
-		FieldCell destination;
-		BattleField bf = BattleField.getInstance();
-		WarriorData wd = bf.getEnemyData();
-		WarriorData hd = bf.getHunterData();
-		AStar a = new AStar(bf.getMap());
-		ArrayList<FieldCell> si = bf.getSpecialItems();
-		
-		//
+
 		context = GameContext.getInstance();
-		context.gameAction(this);
 		
+		return context.gameAction(this);
+		
+		/*
 		//Normal Attack
 		if (wd.getInRange() && (!hd.getInRange() || runningAway>0)) {
 			return new Attack(wd.getFieldCell());
@@ -74,8 +65,8 @@ public class Character extends Warrior {
 				return new BuildWall(destination);
 			}
 		}
-		
-		return new MovimientoNormal(a, this.getPosition(),wd.getFieldCell());
+		*/
+		/*return new MovimientoNormal(a, this.getPosition(),wd.getFieldCell());*/
 	}
 
 	@Override

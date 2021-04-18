@@ -1,14 +1,13 @@
-package standard;
+package state;
 
 import action.CharacterAction;
-import state.CharacterState;
+import ia.battle.core.actions.Action;
 
 public class PickingSIState implements CharacterState {
 
 	@Override
-	public void characterAction(CharacterAction p) {
-		// TODO Auto-generated method stub
-
+	public Action characterAction(CharacterAction p) {
+		return p.pickingSI();
 	}
 
 }

@@ -1,9 +1,10 @@
 package state;
 import action.CharacterAction;
+import ia.battle.core.actions.Action;
 
 public class AttackState implements CharacterState {
 	@Override
-	public void characterAction(CharacterAction p) {
-		p.AttackWarrior();
+	public Action characterAction(CharacterAction p) {
+		return p.attackWarrior();
 	}
 }

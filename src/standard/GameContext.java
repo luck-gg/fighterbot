@@ -2,9 +2,8 @@ package standard;
 import action.CharacterAction;
 import ia.battle.core.BattleField;
 import ia.battle.core.WarriorData;
-import state.AttackState;
-import state.CharacterState;
-import state.SearchState;
+import ia.battle.core.actions.Action;
+import state.*;
 
 public class GameContext {
 	
@@ -26,34 +25,40 @@ public class GameContext {
 	public void setState(CharacterState state) {
 		this.state = state;
 	}
-	public void gameAction(Character character) {
-		player.setWarrior(character);
+	public Action gameAction(Character character) {
 		BattleField bf = BattleField.getInstance();
 		WarriorData wd = bf.getEnemyData();
 		WarriorData hd = bf.getHunterData();
 		
+		player.setWarrior(character);
+		player.setBattlefield(bf);
+	
 		//Normal Attack
 		if (wd.getInRange() && !hd.getInRange()) {
 			this.setState(new AttackState());
 		}
+		
 		//Running Away from Hunter
 		else if (hd.getInRange()) {
 			this.setState(new RunAwayState());
 		}
+		
 		//Picking SI
 		else if (character.getHealth()>40 && !wd.getInRange() && !hd.getInRange()) {
 			this.setState(new PickingSIState());
 		}
+		/*
 		//Low Health
 		else if (character.getHealth()<20 || state.toString()=="SUICIDE") {
 			this.setState(new SuicideState());
 		}
+		*/
 		//Normal Search
 		else {
 			this.setState(new SearchState());
 		}
-			
-		state.characterAction(player);
+		System.out.print(state.toString());
+		return state.characterAction(player);
 	}
 	
 

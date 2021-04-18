@@ -1,6 +1,7 @@
 package state;
 import action.CharacterAction;
+import ia.battle.core.actions.Action;
 
 public interface CharacterState {
-	void characterAction(CharacterAction p);
+	Action characterAction(CharacterAction p);
 }

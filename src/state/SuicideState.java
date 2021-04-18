@@ -1,7 +1,7 @@
-package standard;
+package state;
 
 import action.CharacterAction;
-import state.CharacterState;
+import ia.battle.core.actions.Action;
 
 public class SuicideState implements CharacterState {
 
@@ -11,7 +11,8 @@ public class SuicideState implements CharacterState {
 	}
 
 	@Override
-	public void characterAction(CharacterAction p) {
+	public Action characterAction(CharacterAction p) {
+		return null;
 		// TODO Auto-generated method stub
 
 	}
