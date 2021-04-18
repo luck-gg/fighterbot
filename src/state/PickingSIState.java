@@ -10,4 +10,9 @@ public class PickingSIState implements CharacterState {
 		return p.pickingSI();
 	}
 
+	@Override
+	public String toString() {
+		return "PICKINGSI";
+	}
+
 }

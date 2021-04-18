@@ -15,7 +15,7 @@ public class AStar {
 	}
 
 
-	private FieldCell fieldCellOrigin, fieldCellDestination;
+	private FieldCell fieldCellOrigin, fieldCellDestination, fieldCellHunter;
 	private ArrayList<Node> nodes;
 	private ArrayList<Node> closedNodes, openNodes;
 	private Node origin, destination;
@@ -24,9 +24,10 @@ public class AStar {
 		this.map = fieldCells;
 	}
 	
-	public ArrayList<Node> findPath(FieldCell fcOrigin, FieldCell fcDestination) {
+	public ArrayList<Node> findPath(FieldCell fcOrigin, FieldCell fcDestination, FieldCell hunterPosition) {
 		this.fieldCellOrigin=fcOrigin;
 		this.fieldCellDestination=fcDestination;
+		this.fieldCellHunter=hunterPosition;
 		nodes = new ArrayList<Node>();
 		closedNodes = new ArrayList<Node>();
 		openNodes = new ArrayList<Node>();
@@ -67,8 +68,9 @@ public class AStar {
 	}
 
 	private void processNode(Node node) {
-
+		float enemyMultiplier = (node.getFieldCell()==getFieldCellHunter()) ? 10:1;
 		ArrayList<Node> adj = getAdjacentNodes(node);
+		
 
 		openNodes.remove(node);
 		closedNodes.add(node);
@@ -78,7 +80,9 @@ public class AStar {
 			if (closedNodes.contains(n))
 				continue;
 			//Analizo FieldCell
-			float cost = n.getFieldCell().getCost();
+			enemyMultiplier = (n.getFieldCell()==getFieldCellHunter()) ? 10:enemyMultiplier;
+			
+			float cost = n.getFieldCell().getCost() * enemyMultiplier;
 			
 			//Compute the Manhattan distance from node 'n' to destination
 			int h = Math.abs(destination.getX() - n.getX());
@@ -89,7 +93,7 @@ public class AStar {
 			if (node.getX() == n.getX() || node.getY() == n.getY())
 				g += 10 * cost;
 			else
-				g += Math.sqrt(2)*10 * cost;
+				g += Math.sqrt(2)* 10 * cost;
 
 			if (!openNodes.contains(n)) {
 
@@ -170,5 +174,9 @@ public class AStar {
 		System.out.println();
 		System.out.println("The best path:");
 		//a.printMap();
+	}
+
+	private FieldCell getFieldCellHunter() {
+		return fieldCellHunter;
 	}
 }

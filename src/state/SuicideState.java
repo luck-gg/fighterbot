@@ -12,9 +12,7 @@ public class SuicideState implements CharacterState {
 
 	@Override
 	public Action characterAction(CharacterAction p) {
-		return null;
-		// TODO Auto-generated method stub
-
+		return p.suicide();
 	}
 
 }
