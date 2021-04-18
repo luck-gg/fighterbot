@@ -29,27 +29,29 @@ public class GameContext {
 		BattleField bf = BattleField.getInstance();
 		WarriorData wd = bf.getEnemyData();
 		WarriorData hd = bf.getHunterData();
+		boolean hunterAway = bf.calculateDistance(character.getPosition(), hd.getFieldCell()) > 20 ? true:false;
 		
 		player.setWarrior(character);
 		player.setBattlefield(bf);
 	
 		//Normal Attack
-		if (wd.getInRange() && !hd.getInRange()) {
+		if (wd.getInRange() && hunterAway) {
 			this.setState(new AttackState());
 		}
 		
 		//Running Away from Hunter
-		else if (bf.calculateDistance(character.getPosition(), hd.getFieldCell())<10) {
+		else if (!hunterAway) {
 			this.setState(new RunAwayState());
+			System.out.print("Hunter at : " + bf.calculateDistance(character.getPosition(), hd.getFieldCell()));
 		}
 		
 		//Picking SI
-		else if (character.getHealth()>40 && !wd.getInRange() && !hd.getInRange()) {
+		else if (character.getHealth()>40 && !wd.getInRange() && hunterAway) {
 			this.setState(new PickingSIState());
 		}
 		
 		//Low Health
-		else if (character.getHealth()<20 || state.toString()=="SUICIDE") {
+		else if (character.getHealth()<10 || state.toString()=="SUICIDE") {
 			this.setState(new SuicideState());
 		}
 		

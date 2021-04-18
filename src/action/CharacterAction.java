@@ -28,7 +28,7 @@ public class CharacterAction {
 		System.out.print("Movimiento Ataque");
 		return new Attack(wd1.getFieldCell());
 	}
-	//TODO: Incorporar logica de Hunter
+	//TODO: Incorporar logica de Hunter para evitarlo
 	public Action searchWarrior() {
 		System.out.print("Movimiento Normal");
 		AStar a = new AStar(bf.getMap());
@@ -58,12 +58,12 @@ public class CharacterAction {
 	}
 	
 	public Action suicide() {
-		float explosionRange = 10f;
+		float explosionRange = 5f;
 		float runawayRange = 15f;
 		FieldCell enemyFC = bf.getEnemyData().getFieldCell();
 		
 		if (bf.calculateDistance(ch.getPosition(),enemyFC)>=runawayRange) {
-			return runawayFromHunter();
+			return runawayFromEnemy();
 		}else{
 			FieldCell destination = createBunker(bf);
 			if(destination==null && bf.calculateDistance(ch.getPosition(), enemyFC)<explosionRange) {
