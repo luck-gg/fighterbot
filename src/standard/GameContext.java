@@ -39,7 +39,7 @@ public class GameContext {
 		}
 		
 		//Running Away from Hunter
-		else if (hd.getInRange()) {
+		else if (bf.calculateDistance(character.getPosition(), hd.getFieldCell())<10) {
 			this.setState(new RunAwayState());
 		}
 		
@@ -47,12 +47,12 @@ public class GameContext {
 		else if (character.getHealth()>40 && !wd.getInRange() && !hd.getInRange()) {
 			this.setState(new PickingSIState());
 		}
-		/*
+		
 		//Low Health
 		else if (character.getHealth()<20 || state.toString()=="SUICIDE") {
 			this.setState(new SuicideState());
 		}
-		*/
+		
 		//Normal Search
 		else {
 			this.setState(new SearchState());
