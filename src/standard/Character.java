@@ -5,6 +5,7 @@ import ia.battle.core.actions.Action;
 import ia.exceptions.RuleException;
 import state.PickingSIState;
 import state.RunAwayState;
+import state.SearchState;
 
 public class Character extends Warrior {
 	GameContext context = null;
@@ -20,8 +21,8 @@ public class Character extends Warrior {
 	public Action playTurn(long tick, int actionNumber) {
 
 		context = GameContext.getInstance();
-		
-		return context.gameAction(this);
+		return context.setState(new SearchState(this));
+
 	
 	}
 

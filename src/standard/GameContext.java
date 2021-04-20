@@ -7,7 +7,7 @@ import state.*;
 
 public class GameContext {
 	
-	private CharacterState state = null;
+	private CharacterState state =  new SearchState();
 	private CharacterAction player = new CharacterAction();
 
 	private static GameContext instance = null;
@@ -34,7 +34,7 @@ public class GameContext {
 		System.out.print("Hunter at : " + bf.calculateDistance(character.getPosition(), hd.getFieldCell()));
 		player.setWarrior(character);
 		player.setBattlefield(bf);
-	
+		this.setState();
 		if (hunterAway) {
 			//Atacando Enemigo
 			if (wd.getInRange() && character.getHealth()>10) {
