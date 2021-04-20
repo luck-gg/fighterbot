@@ -37,27 +37,34 @@ public class GameContext {
 	
 		if (hunterAway) {
 			//Atacando Enemigo
-			if (wd.getInRange()) {
+			if (wd.getInRange() && character.getHealth()>10) {
 				this.setState(new AttackState());
+			}
+			//Low Health
+			else if (wd.getInRange() && character.getHealth()<=10) {
+				this.setState(new SuicideState());
 			}
 			//Picking SI
 			else if (character.getHealth()>40 && !wd.getInRange()) {
 				//TODO: Esto esta levantando una excepcion y hace que muera el Character
 				this.setState(new PickingSIState());
 			}
-			//Low Health
-			else if (character.getHealth()<10) {
-				this.setState(new SuicideState());
-			}
+			
 			//Buscando Enemigo
 			else {
-				this.setState(new SearchState());
+				double enemyDistance = bf.calculateDistance(character.getPosition(), wd.getFieldCell());
+				//Luring
+				if (character.getRange()+5>enemyDistance && character.getRange()<=enemyDistance) {
+					this.setState(new WaitState());
+				}else {
+					this.setState(new SearchState());
+				}
 			}
 		}
 		//Running Away from Hunter
 		else if (!hunterAway) {
 			//Low Health
-			if (character.getHealth()<10) {
+			if (character.getHealth()<=10) {
 				this.setState(new SuicideState());
 			}else {
 				this.setState(new RunAwayState());
