@@ -3,9 +3,8 @@ import ia.battle.core.FieldCell;
 import ia.battle.core.Warrior;
 import ia.battle.core.actions.Action;
 import ia.exceptions.RuleException;
-import state.PickingSIState;
-import state.RunAwayState;
 import state.SearchState;
+import state.SuicideState;
 
 public class Character extends Warrior {
 	GameContext context = null;
@@ -21,21 +20,24 @@ public class Character extends Warrior {
 	public Action playTurn(long tick, int actionNumber) {
 
 		context = GameContext.getInstance();
-		return context.setState(new SearchState(this));
-
-	
+		if (context.getState()==null) {
+			context.setState(new SearchState(this));
+		}
+		return context.gameAction();
 	}
 
 	@Override
 	public void wasAttacked(int damage, FieldCell source) {
 		context = GameContext.getInstance();
-		context.setState(new RunAwayState());
+		if (this.getHealth()<10) {
+			context.setState(new SuicideState(this));
+		}
 	}
 
 	@Override
 	public void enemyKilled() {
 		context = GameContext.getInstance();
-		context.setState(new PickingSIState());
+		context.setState(new SearchState(this));
 	}
 
 	@Override
