@@ -20,17 +20,19 @@ public class WaitState implements CharacterState {
 	
 	@Override
 	public Action characterAction(CharacterAction p) {
-		return p.waitEnemy();
+		return p.waitEnemy(bf, ch);
 	}
 
 	@Override
 	public CharacterState nextState() {
-		boolean hunterAway = bf.calculateDistance(ch.getPosition(), hd.getFieldCell()) > 10 ? true:false;
+		wd = bf.getEnemyData();
+		hd = bf.getHunterData();
+		boolean hunterAway = bf.calculateDistance(ch.getPosition(), hd.getFieldCell()) > hunterMaxDistance ? true:false;
 		double enemyDistance = bf.calculateDistance(ch.getPosition(), wd.getFieldCell());
 		
-		if(wd.getInRange() && hunterAway) {
+		if(wd.getInRange()) {
 			return new AttackState(this.getCharacter());
-		}else if (ch.getRange()+10<enemyDistance && hunterAway) {
+		}else if (ch.getRange()+waitDistance<enemyDistance && hunterAway) {
 			return new SearchState(this.getCharacter());
 		}else if (!hunterAway){
 			return new RunAwayState(this.getCharacter());
@@ -42,5 +44,8 @@ public class WaitState implements CharacterState {
 	@Override
 	public Character getCharacter() {
 		return ch;
+	}
+	public void setCharacter(Character character) {
+		this.ch=character;
 	}
 }

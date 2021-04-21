@@ -1,15 +1,13 @@
 package action;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import ia.battle.core.BattleField;
 import ia.battle.core.FieldCell;
 import ia.battle.core.FieldCellType;
-import ia.battle.core.WarriorData;
 import ia.battle.core.actions.Action;
 import ia.battle.core.actions.Attack;
-import ia.battle.core.actions.BuildWall;
 import ia.battle.core.actions.Skip;
 import ia.battle.core.actions.Suicide;
 import path.AStar;
@@ -17,26 +15,28 @@ import standard.Character;
 
 public class CharacterAction {
 
-	private BattleField bf = null;
-	private Character ch = null;
 	public CharacterAction() {
 	}
 	
-	public Action attackWarrior() {
-		WarriorData wd1 = bf.getEnemyData();
+	public Action attackWarrior(BattleField bf) {
 		System.out.print("Movimiento Ataque");
-		return new Attack(wd1.getFieldCell());
+		try {
+			return new Attack(bf.getEnemyData().getFieldCell());
+		} catch (Exception e) {
+			System.out.print("Error = "+ e.getMessage());
+			return new Skip();
+		}
 	}
 
-	public Action searchWarrior() {
+	public Action searchWarrior(BattleField bf2, Character ch2) {
 		System.out.print("Movimiento Normal");
-		AStar a = new AStar(bf.getMap());
-		FieldCell wpos = bf.getEnemyData().getFieldCell();
-		FieldCell hpos = bf.getHunterData().getFieldCell();
-		return new MovimientoNormal(a, ch.getPosition(), wpos, hpos);
+		AStar a = new AStar(bf2.getMap());
+		FieldCell wpos = bf2.getEnemyData().getFieldCell();
+		FieldCell hpos = bf2.getHunterData().getFieldCell();
+		return new MovimientoNormal(a, ch2.getPosition(), wpos, hpos);
 	}
 	
-	public Action pickingSI() {
+	public Action pickingSI(BattleField bf, Character ch) {
 		AStar a = new AStar(bf.getMap());
 		FieldCell destination = getClosestSI(ch.getPosition(), bf.getSpecialItems());
 		FieldCell hpos = bf.getHunterData().getFieldCell();
@@ -53,13 +53,14 @@ public class CharacterAction {
 		}
 	}
 	
-	public Action runawayFromHunter() {
+	public Action runawayFromHunter(BattleField bf, Character ch) {
 		AStar a = new AStar(bf.getMap());
 		FieldCell hpos = bf.getHunterData().getFieldCell();
-		FieldCell destination = runAwayVector(ch.getPosition(), hpos);
+		FieldCell destination = runAwayVector(bf, ch.getPosition(), hpos);
+		destination = randomMovement(bf, destination);
 		return new MovimientoNormal(a, ch.getPosition(), destination, hpos);
 	}
-	
+	/*
 	public Action runawayFromEnemy() {
 		AStar a = new AStar(bf.getMap());
 		FieldCell wpos = bf.getEnemyData().getFieldCell();
@@ -67,30 +68,26 @@ public class CharacterAction {
 		FieldCell destination = runAwayVector(ch.getPosition(), wpos);
 		return new MovimientoNormal(a, ch.getPosition(), destination, hpos);
 	}
-	
-	public Action suicide() {
-		float explosionRange = 5f;
+	*/
+	public Action suicide(BattleField bf, Character ch) {
+		float explosionRange = 5;
 		FieldCell enemyFC = bf.getEnemyData().getFieldCell();
 		
 		if (bf.calculateDistance(ch.getPosition(),enemyFC)>=explosionRange) {
 			System.out.print("kamikaze");
-			return searchWarrior();
+			return this.searchWarrior(bf,ch);
 		}else{
 			return new Suicide();
 		}
 	}
 	
-	public Action waitEnemy() {
-		return new Skip();
+	public Action waitEnemy(BattleField bf, Character ch) {
+		AStar a = new AStar(bf.getMap());
+		FieldCell hpos = bf.getHunterData().getFieldCell();
+		FieldCell dest = randomMovement(bf, ch.getPosition());
+		return new MovimientoNormal(a, ch.getPosition(), dest, hpos);
 	}
 
-	public void setWarrior(Character character) {
-		this.ch = character;
-	}
-	
-	public void setBattlefield(BattleField bf ) {
-		this.bf = bf;
-	}
 	
 	private FieldCell getClosestSI(FieldCell myPosition, ArrayList<FieldCell> mapSI) {
 		double searchLimit = 5;
@@ -116,10 +113,21 @@ public class CharacterAction {
 		return mapSI.get(idx);
 	}
 
-	private FieldCell runAwayVector(FieldCell myPosition, FieldCell enemyPosition)
+	private FieldCell randomMovement(BattleField bf, FieldCell pos) {
+		List<FieldCell> adj = bf.getAdjacentCells(pos);
+		Random rand = new Random();
+		for (int i = 0; i < adj.size(); i++) {
+			if (adj.get(i).getFieldCellType() == FieldCellType.BLOCKED) {
+				adj.remove(i);
+			}
+		}
+        FieldCell dest = adj.get(rand.nextInt(adj.size()));
+		return dest;
+	}
+	private FieldCell runAwayVector(BattleField bf, FieldCell myPosition, FieldCell enemyPosition)
 	{
-		int mapSizeX = getBf().getMap().length;
-		int mapSizeY = getBf().getMap()[0].length;
+		int mapSizeX = bf.getMap().length;
+		int mapSizeY = bf.getMap()[0].length;
 		int runToX = 0;
 		int runToY = 0;
 
@@ -133,10 +141,10 @@ public class CharacterAction {
 			runToY = enemyPosition.getY() - myPosition.getY() > 0 ? 1:(mapSizeY-2) ; //3-4->end ; 4-3=1
 		}
 
-		return getBf().getMap()[runToX][runToY];
+		return bf.getMap()[runToX][runToY];
 	}
-	
-	private FieldCell createBunker(BattleField bf) {
+	/*
+	private FieldCell createBunker(BattleField bf, Character ch) {
 		List<FieldCell> adj =bf.getAdjacentCells(ch.getPosition());
 		//Busco las paredes existentes y las elimino de la lista
 		for (int i = 0; i < adj.size(); i++) {
@@ -157,10 +165,8 @@ public class CharacterAction {
 		}
 		return null;
 	}
-
-	private BattleField getBf() {
-		return bf;
-	}
+	*/
+	
 
 	
 }

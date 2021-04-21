@@ -4,7 +4,6 @@ import ia.battle.core.Warrior;
 import ia.battle.core.actions.Action;
 import ia.exceptions.RuleException;
 import state.SearchState;
-import state.SuicideState;
 
 public class Character extends Warrior {
 	GameContext context = null;
@@ -22,22 +21,26 @@ public class Character extends Warrior {
 		context = GameContext.getInstance();
 		if (context.getState()==null) {
 			context.setState(new SearchState(this));
+		}else {
+			context.getState().setCharacter(this);
 		}
 		return context.gameAction();
 	}
 
 	@Override
 	public void wasAttacked(int damage, FieldCell source) {
-		context = GameContext.getInstance();
+		/*context = GameContext.getInstance();
 		if (this.getHealth()<10) {
 			context.setState(new SuicideState(this));
-		}
+		}*/
 	}
 
 	@Override
 	public void enemyKilled() {
+		/*
 		context = GameContext.getInstance();
 		context.setState(new SearchState(this));
+		*/
 	}
 
 	@Override

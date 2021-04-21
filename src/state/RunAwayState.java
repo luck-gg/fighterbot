@@ -19,12 +19,12 @@ public class RunAwayState implements CharacterState {
 	
 	@Override
 	public Action characterAction(CharacterAction p) {
-		return p.runawayFromHunter();
+		return p.runawayFromHunter(bf,ch);
 	}
 
 	@Override
 	public CharacterState nextState() {
-		boolean hunterAway = bf.calculateDistance(ch.getPosition(), hd.getFieldCell()) > 10 ? true:false;
+		boolean hunterAway = bf.calculateDistance(ch.getPosition(), hd.getFieldCell()) > hunterMaxDistance ? true:false;
 		
 		if (hunterAway) {
 			return new SearchState(this.getCharacter());
@@ -35,6 +35,11 @@ public class RunAwayState implements CharacterState {
 	@Override
 	public Character getCharacter() {
 		return ch;
+	}
+
+	@Override
+	public void setCharacter(Character character) {
+		this.ch=character;
 	}
 
 }

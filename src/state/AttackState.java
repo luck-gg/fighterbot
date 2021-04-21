@@ -18,25 +18,28 @@ public class AttackState implements CharacterState {
 	}
 	@Override
 	public Action characterAction(CharacterAction p) {
-		return p.attackWarrior();
+		return p.attackWarrior(bf);
 	}
 
 	@Override
 	public CharacterState nextState() {
-		boolean hunterAway = bf.calculateDistance(ch.getPosition(), hd.getFieldCell()) > 10 ? true:false;
+		wd = bf.getEnemyData();
+		hd = bf.getHunterData();
+		
+		boolean hunterAway = bf.calculateDistance(ch.getPosition(), hd.getFieldCell()) > hunterMaxDistance ? true:false;
 		double enemyDistance = bf.calculateDistance(ch.getPosition(), wd.getFieldCell());
 		
 		//To Search state
 		if(!wd.getInRange() && hunterAway) {
 			return new SearchState(this.getCharacter());
 		}//To Wait state
-		else if (ch.getRange()+10>enemyDistance && ch.getRange()<enemyDistance && hunterAway) {
+		else if (ch.getRange()+waitDistance>=enemyDistance && ch.getRange()<enemyDistance && hunterAway) {
 			return new WaitState(this.getCharacter());
 		}//To Runaway state
 		else if(!hunterAway){
 			return new RunAwayState(this.getCharacter());
 		}//To Suicide state
-		else if(enemyDistance<5){
+		else if(ch.getHealth()<10){
 			return new SuicideState(this.getCharacter());
 		}
 		//Keep state
@@ -48,5 +51,8 @@ public class AttackState implements CharacterState {
 	@Override
 	public Character getCharacter() {
 		return this.ch;
+	}
+	public void setCharacter(Character character) {
+		this.ch=character;
 	}
 }

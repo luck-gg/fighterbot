@@ -9,7 +9,7 @@ import ia.exceptions.RuleException;
 
 public class ElAdministrador2 extends WarriorManager {
 
-	private int versionNo = 5;
+	private int versionNo = 6;
 	@Override
 	public String getName() {
 		return "El Administrador " + versionNo;
