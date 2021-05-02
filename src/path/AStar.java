@@ -42,11 +42,8 @@ public class AStar {
 		}
 
 		origin = nodes.get(nodes.indexOf(new Node(fieldCellOrigin)));
-		//TODO: Remove debug code
-		System.out.print("Dest node: "+fieldCellDestination+". Type: "+fieldCellDestination.getFieldCellType());
 		
 		try {
-			System.out.print(nodes.indexOf(new Node(fieldCellDestination)));
 			destination = nodes.get(nodes.indexOf(new Node(fieldCellDestination)));
 		} catch (Exception e) {
 			// Supress movement
@@ -73,7 +70,6 @@ public class AStar {
 		}
 
 		Collections.reverse(path);
-		System.out.print(path);
 		return path;
 	}
 
