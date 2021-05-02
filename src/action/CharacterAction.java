@@ -38,19 +38,18 @@ public class CharacterAction {
 	
 	public Action pickingSI(BattleField bf, Character ch) {
 		AStar a = new AStar(bf.getMap());
-		FieldCell destination = getClosestSI(ch.getPosition(), bf.getSpecialItems());
-		FieldCell hpos = bf.getHunterData().getFieldCell();
-		if(destination==ch.getPosition()) {
-			return new Skip();
-		}else{
-			try {
-				return new MovimientoNormal(a, ch.getPosition(), destination, hpos);
-			} catch (Exception e) {
-				System.out.print("Error = "+ e.getMessage());
-				return new Skip();
-			}
-			
+		ArrayList<FieldCell> simap = bf.getSpecialItems();
+		if (simap.size()>1) {
+			FieldCell origin = ch.getPosition();
+			FieldCell destination = getClosestSI(origin, simap);
+			FieldCell hpos = bf.getHunterData().getFieldCell();
+			if (destination.getX() == origin.getX() && destination.getY() == origin.getY()) {
+				return runawayFromHunter(bf, ch);
+			}else if (destination.getFieldCellType() != FieldCellType.BLOCKED) {
+				return new MovimientoNormal(a, origin, destination, hpos);
+			} 
 		}
+		return new Skip();
 	}
 	
 	public Action runawayFromHunter(BattleField bf, Character ch) {

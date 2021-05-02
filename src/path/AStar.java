@@ -42,7 +42,17 @@ public class AStar {
 		}
 
 		origin = nodes.get(nodes.indexOf(new Node(fieldCellOrigin)));
-		destination = nodes.get(nodes.indexOf(new Node(fieldCellDestination)));
+		//TODO: Remove debug code
+		System.out.print("Dest node: "+fieldCellDestination+". Type: "+fieldCellDestination.getFieldCellType());
+		
+		try {
+			System.out.print(nodes.indexOf(new Node(fieldCellDestination)));
+			destination = nodes.get(nodes.indexOf(new Node(fieldCellDestination)));
+		} catch (Exception e) {
+			// Supress movement
+			System.out.print(e.getMessage());
+			destination = nodes.get(nodes.indexOf(new Node(fieldCellOrigin)));
+		}
 
 		Node currentNode = origin;
 		while (!currentNode.equals(destination)) {
@@ -63,7 +73,7 @@ public class AStar {
 		}
 
 		Collections.reverse(path);
-
+		System.out.print(path);
 		return path;
 	}
 
